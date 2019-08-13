@@ -11,5 +11,7 @@ namespace Notification.Contracts
         Task<NotificationResponse> SendAsync(T notification);
 
         Task<IEnumerable<NotificationResponse>> Send(IEnumerable<T> notifications);
+
+        NotificationResponse Send(T notifications);
     }
 }

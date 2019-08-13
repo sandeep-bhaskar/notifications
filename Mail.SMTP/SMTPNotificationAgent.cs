@@ -5,6 +5,8 @@ using System.Net.Mail;
 using System.Threading.Tasks;
 using Notification.Core.Providers;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Notification.SMTP
 {
@@ -23,30 +25,55 @@ namespace Notification.SMTP
             this.Config = config;
         }
 
-        public override Task<IEnumerable<NotificationResponse>> Send(IEnumerable<T> notifications)
+
+        public override NotificationResponse Send(T notification)
         {
-            //try
-            //{
-            //    var message = this.GetMailMessage(mail);
-            //    this.SMTPClient.Send(message);
-            //    return new NotificationResponse
-            //    {
-            //        DeliveryStatus = DeliveryStatus.Delivered,
-            //        NotificationStatus = NotificationStatus.Sent
-            //    };
-            //}
-            //catch (Exception ex)
-            //{
+            try
+            {
+                var message = this.GetMailMessage(notification as Email);
+                this.SMTPClient.SendMailAsync(message);
+                return new NotificationResponse
+                {
+                    DeliveryStatus = DeliveryStatus.Delivered,
+                    NotificationStatus = NotificationStatus.Sent
+                };
+            }
+            catch (Exception ex)
+            {
 
-            //}
+            }
 
-            //return new EmailResponse
-            //{
-            //    DeliveryStatus = DeliveryStatus.Bounced,
-            //    EmailStatus = EmailStatus.Failed
-            //};
+            return new NotificationResponse
+            {
+                DeliveryStatus = DeliveryStatus.Bounced,
+                NotificationStatus = NotificationStatus.Failed
+            };
+        }
 
-            throw new NotImplementedException();
+
+        public async override Task<IEnumerable<NotificationResponse>> Send(IEnumerable<T> notifications)
+        {
+            List<NotificationResponse> resp = new List<NotificationResponse>();
+            try
+            {
+                notifications.ToList().ForEach(n => {
+                    resp.Add(this.Send(n));
+                });
+
+                return resp;
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            resp.Add(new NotificationResponse
+            {
+                DeliveryStatus = DeliveryStatus.Bounced,
+                NotificationStatus = NotificationStatus.Failed
+            });
+                       
+            return resp;
         }
 
         public async override Task<NotificationResponse> SendAsync(T notification)
@@ -82,6 +109,36 @@ namespace Notification.SMTP
             {
                 message.To.Add(to);
             });
+
+            if (mail.Attachments != null)
+            {
+                mail.Attachments.ForEach(at =>
+                {
+                    message.Attachments.Add(new Attachment(new MemoryStream(at.Content), at.Name));
+                });
+            }
+
+            if (mail.CC != null)
+            {
+                mail.CC.ForEach(cc =>
+                {
+                    message.CC.Add(cc);
+                });
+            }
+
+            if (mail.BCC != null)
+            {
+                mail.BCC.ForEach(Bcc =>
+                {
+                    message.Bcc.Add(Bcc);
+                });
+            }
+
+            if (mail.Priority == Concerns.MailPriority.High)
+            {
+                message.Priority = System.Net.Mail.MailPriority.High;
+            }
+
             message.Subject = mail.Subject;
             message.Body = mail.Content;
             return message;

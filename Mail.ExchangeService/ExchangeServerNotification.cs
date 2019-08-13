@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Notification.Core.Providers;
+using System.Linq;
 
 namespace Notification.ExchangeMailService
 {
@@ -21,53 +22,36 @@ namespace Notification.ExchangeMailService
             ExchangeService.AutodiscoverUrl(DefaultFromEmail);            
         }
 
-        public override Task<IEnumerable<NotificationResponse>> Send(IEnumerable<Email> notifications)
+        public async override Task<IEnumerable<NotificationResponse>> Send(IEnumerable<Email> notifications)
         {
-            throw new NotImplementedException();
+            List<NotificationResponse> resp = new List<NotificationResponse>();
+            try
+            {
+                notifications.ToList().ForEach(n => {
+                    resp.Add(this.Send(n));
+                });
+
+                return resp;
+            }
+            catch (Exception ex)
+            {
+
+            }
+            resp.Add(new NotificationResponse
+            {
+                DeliveryStatus = DeliveryStatus.Bounced,
+                NotificationStatus = NotificationStatus.Failed
+            });
+
+            return resp;
         }
 
-        public override async Task<NotificationResponse> SendAsync(Email notification)
+        public override NotificationResponse Send(Email notification)
         {
             try
             {
-                EmailMessage emailMessage = new EmailMessage(this.ExchangeService);
-                emailMessage.Subject = notification.Subject;
-                emailMessage.Body = new MessageBody(notification.Content);
-                if (notification.Priority == MailPriority.High)
-                {
-                    emailMessage.Importance = Importance.High;
-                }
+                var emailMessage = this.GetEmailMessage(notification);
 
-                notification.To.ForEach(to =>
-                {
-                    emailMessage.ToRecipients.Add(to);
-                });
-
-                if (notification.CC != null)
-                {
-                    notification.CC.ForEach(to =>
-                    {
-                        emailMessage.CcRecipients.Add(to);
-                    });
-                }
-
-                if (notification.BCC != null)
-                {
-                    notification.BCC.ForEach(to =>
-                    {
-                        emailMessage.BccRecipients.Add(to);
-                    });
-                }
-
-                if (notification.Attachments != null)
-                {
-                    notification.Attachments.ForEach(at =>
-                    {
-                        emailMessage.Attachments.AddFileAttachment(at.Name, at.Content);
-                    });
-                }
-
-                emailMessage.From = notification.FromEmail;
                 emailMessage.Save();
                 emailMessage.SendAndSaveCopy();
 
@@ -87,6 +71,77 @@ namespace Notification.ExchangeMailService
                 DeliveryStatus = DeliveryStatus.Bounced,
                 NotificationStatus = NotificationStatus.Failed
             };
+        }
+
+        public override async Task<NotificationResponse> SendAsync(Email notification)
+        {
+            try
+            {
+                var emailMessage = this.GetEmailMessage(notification);
+
+                emailMessage.Save();
+                emailMessage.SendAndSaveCopy();
+
+                return new NotificationResponse
+                {
+                    DeliveryStatus = DeliveryStatus.Delivered,
+                    NotificationStatus = NotificationStatus.Sent
+                };
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return new NotificationResponse
+            {
+                DeliveryStatus = DeliveryStatus.Bounced,
+                NotificationStatus = NotificationStatus.Failed
+            };
+        }
+
+        private EmailMessage GetEmailMessage(Email email)
+        {
+            EmailMessage emailMessage = new EmailMessage(this.ExchangeService);
+            emailMessage.Subject = email.Subject;
+            emailMessage.Body = new MessageBody(email.Content);
+            if (email.Priority == MailPriority.High)
+            {
+                emailMessage.Importance = Importance.High;
+            }
+
+            email.To.ForEach(to =>
+            {
+                emailMessage.ToRecipients.Add(to);
+            });
+
+            if (email.CC != null)
+            {
+                email.CC.ForEach(to =>
+                {
+                    emailMessage.CcRecipients.Add(to);
+                });
+            }
+
+            if (email.BCC != null)
+            {
+                email.BCC.ForEach(to =>
+                {
+                    emailMessage.BccRecipients.Add(to);
+                });
+            }
+
+            if (email.Attachments != null)
+            {
+                email.Attachments.ForEach(at =>
+                {
+                    emailMessage.Attachments.AddFileAttachment(at.Name, at.Content);
+                });
+            }
+
+            emailMessage.From = email.FromEmail;
+
+            return emailMessage;
         }
     }
 }
