@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2037
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notification.Concerns", "Mail.Model\Notification.Concerns.csproj", "{4678577B-F5B0-43AF-BBD0-13A67AA586B2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notification.SMTP", "Mail.SMTP\Notification.SMTP.csproj", "{779F29A5-4009-43C1-8EFE-02223D1AFBE1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notification.ExchangeServer", "Mail.ExchangeService\Notification.ExchangeServer.csproj", "{2BD863AA-AA0A-4370-A009-C15EA148EEFD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notification.SendGrid", "Mail.SendGrid\Notification.SendGrid.csproj", "{B5F78083-EF15-417B-A88D-CBF31074A1CB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notification.Core", "Mail.Core\Notification.Core.csproj", "{0DF93874-5AE3-49F6-9687-F7555285D759}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notification.UnitTest", "Mail.UnitTest\Notification.UnitTest.csproj", "{E74584DB-C3B1-4C8E-9B92-707071270A7A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4678577B-F5B0-43AF-BBD0-13A67AA586B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4678577B-F5B0-43AF-BBD0-13A67AA586B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4678577B-F5B0-43AF-BBD0-13A67AA586B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4678577B-F5B0-43AF-BBD0-13A67AA586B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{779F29A5-4009-43C1-8EFE-02223D1AFBE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{779F29A5-4009-43C1-8EFE-02223D1AFBE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{779F29A5-4009-43C1-8EFE-02223D1AFBE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{779F29A5-4009-43C1-8EFE-02223D1AFBE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BD863AA-AA0A-4370-A009-C15EA148EEFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BD863AA-AA0A-4370-A009-C15EA148EEFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BD863AA-AA0A-4370-A009-C15EA148EEFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BD863AA-AA0A-4370-A009-C15EA148EEFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5F78083-EF15-417B-A88D-CBF31074A1CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5F78083-EF15-417B-A88D-CBF31074A1CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5F78083-EF15-417B-A88D-CBF31074A1CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5F78083-EF15-417B-A88D-CBF31074A1CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DF93874-5AE3-49F6-9687-F7555285D759}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DF93874-5AE3-49F6-9687-F7555285D759}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DF93874-5AE3-49F6-9687-F7555285D759}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DF93874-5AE3-49F6-9687-F7555285D759}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E74584DB-C3B1-4C8E-9B92-707071270A7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E74584DB-C3B1-4C8E-9B92-707071270A7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E74584DB-C3B1-4C8E-9B92-707071270A7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E74584DB-C3B1-4C8E-9B92-707071270A7A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1A901E33-73EF-4CD9-A552-A7B82596A25D}
+	EndGlobalSection
+EndGlobal
