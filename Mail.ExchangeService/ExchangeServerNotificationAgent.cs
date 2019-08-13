@@ -9,10 +9,10 @@ using System.Linq;
 
 namespace Notification.ExchangeMailService
 {
-    public class ExchangeServerNotification : NotificationAgent<Email>
+    public class ExchangeServerNotificationAgent : NotificationAgent<Email>
     {
         public ExchangeService ExchangeService = null;
-        public ExchangeServerNotification(string exchangeServerUserName,
+        public ExchangeServerNotificationAgent(string exchangeServerUserName,
             string exchangeServerPassword,
             string exchangeServerDomain,
             string DefaultFromEmail)
