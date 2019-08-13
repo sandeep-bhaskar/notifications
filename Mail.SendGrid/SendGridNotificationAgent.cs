@@ -27,22 +27,20 @@ namespace Notification.SendGrid
             List<NotificationResponse> resp = new List<NotificationResponse>();
             try
             {
-                notifications.ToList().ForEach(n => {
+                notifications.ToList().ForEach(n =>
+                {
                     resp.Add(this.Send(n));
                 });
-
-                return resp;
             }
             catch (Exception ex)
             {
-
+                resp.Add(new NotificationResponse
+                {
+                    DeliveryStatus = DeliveryStatus.Bounced,
+                    NotificationStatus = NotificationStatus.Failed,
+                    Exception = ex
+                });
             }
-
-            resp.Add(new NotificationResponse
-            {
-                DeliveryStatus = DeliveryStatus.Bounced,
-                NotificationStatus = NotificationStatus.Failed
-            });
 
             return resp;
         }
@@ -61,14 +59,13 @@ namespace Notification.SendGrid
             }
             catch (Exception ex)
             {
-
+                return new NotificationResponse
+                {
+                    DeliveryStatus = DeliveryStatus.Bounced,
+                    NotificationStatus = NotificationStatus.Failed,
+                    Exception = ex
+                };
             }
-
-            return new NotificationResponse
-            {
-                DeliveryStatus = DeliveryStatus.Bounced,
-                NotificationStatus = NotificationStatus.Failed
-            };
         }
 
         public override NotificationResponse Send(T notification)
@@ -85,52 +82,57 @@ namespace Notification.SendGrid
             }
             catch (Exception ex)
             {
-
+                return new NotificationResponse
+                {
+                    DeliveryStatus = DeliveryStatus.Bounced,
+                    NotificationStatus = NotificationStatus.Failed,
+                    Exception = ex
+                };
             }
-
-            return new NotificationResponse
-            {
-                DeliveryStatus = DeliveryStatus.Bounced,
-                NotificationStatus = NotificationStatus.Failed
-            };
         }
 
         private SendGridMessage GetEmailMessage(Email email)
         {
-            var tos = new List<EmailAddress>();
-            email.To.ForEach(_ => tos.Add(new EmailAddress(_)));
-            var msg = MailHelper.CreateSingleEmailToMultipleRecipients(new EmailAddress(email.FromEmail), tos, email.Subject, string.Empty, email.Content);
-            if (email.SendNow)
+            try
             {
-                msg.SendAt = new DateTimeOffset(email.SendOn).ToUnixTimeSeconds();
-            }
-
-            if (email.Attachments != null)
-            {
-                email.Attachments.ForEach(at =>
+                var tos = new List<EmailAddress>();
+                email.To.ForEach(_ => tos.Add(new EmailAddress(_)));
+                var msg = MailHelper.CreateSingleEmailToMultipleRecipients(new EmailAddress(email.FromEmail), tos, email.Subject, string.Empty, email.Content);
+                if (email.SendNow)
                 {
-                    msg.Attachments.Add(new Attachment { Content = System.Text.Encoding.UTF8.GetString(at.Content), Filename = at.Name });
-                });
-            }
+                    msg.SendAt = new DateTimeOffset(email.SendOn).ToUnixTimeSeconds();
+                }
 
-            if (email.CC != null)
-            {
-                email.CC.ForEach(cc =>
+                if (email.Attachments != null)
                 {
-                    msg.AddCc(cc);
-                });
-            }
+                    email.Attachments.ForEach(at =>
+                    {
+                        msg.Attachments.Add(new Attachment { Content = System.Text.Encoding.UTF8.GetString(at.Content), Filename = at.Name });
+                    });
+                }
 
-            if (email.BCC != null)
-            {
-                email.BCC.ForEach(Bcc =>
+                if (email.CC != null)
                 {
-                    msg.AddBcc(Bcc);
-                });
-            }
+                    email.CC.ForEach(cc =>
+                    {
+                        msg.AddCc(cc);
+                    });
+                }
 
-            return msg;
+                if (email.BCC != null)
+                {
+                    email.BCC.ForEach(Bcc =>
+                    {
+                        msg.AddBcc(Bcc);
+                    });
+                }
+
+                return msg;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }
- 

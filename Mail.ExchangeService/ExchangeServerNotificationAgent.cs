@@ -35,13 +35,13 @@ namespace Notification.ExchangeMailService
             }
             catch (Exception ex)
             {
-
-            }
-            resp.Add(new NotificationResponse
-            {
-                DeliveryStatus = DeliveryStatus.Bounced,
-                NotificationStatus = NotificationStatus.Failed
-            });
+                resp.Add(new NotificationResponse
+                {
+                    DeliveryStatus = DeliveryStatus.Bounced,
+                    NotificationStatus = NotificationStatus.Failed,
+                    Exception = ex
+                });
+            }            
 
             return resp;
         }
@@ -63,14 +63,13 @@ namespace Notification.ExchangeMailService
             }
             catch (Exception ex)
             {
-
+               return new NotificationResponse
+                {
+                    DeliveryStatus = DeliveryStatus.Bounced,
+                    NotificationStatus = NotificationStatus.Failed,
+                    Exception = ex
+                };
             }
-
-            return new NotificationResponse
-            {
-                DeliveryStatus = DeliveryStatus.Bounced,
-                NotificationStatus = NotificationStatus.Failed
-            };
         }
 
         public override async Task<NotificationResponse> SendAsync(Email notification)
@@ -90,58 +89,64 @@ namespace Notification.ExchangeMailService
             }
             catch (Exception ex)
             {
-
+               return new NotificationResponse
+                {
+                    DeliveryStatus = DeliveryStatus.Bounced,
+                    NotificationStatus = NotificationStatus.Failed,
+                    Exception = ex
+                };
             }
-
-            return new NotificationResponse
-            {
-                DeliveryStatus = DeliveryStatus.Bounced,
-                NotificationStatus = NotificationStatus.Failed
-            };
         }
 
         private EmailMessage GetEmailMessage(Email email)
         {
-            EmailMessage emailMessage = new EmailMessage(this.ExchangeService);
-            emailMessage.Subject = email.Subject;
-            emailMessage.Body = new MessageBody(email.Content);
-            if (email.Priority == MailPriority.High)
+            try
             {
-                emailMessage.Importance = Importance.High;
-            }
-
-            email.To.ForEach(to =>
-            {
-                emailMessage.ToRecipients.Add(to);
-            });
-
-            if (email.CC != null)
-            {
-                email.CC.ForEach(to =>
+                EmailMessage emailMessage = new EmailMessage(this.ExchangeService);
+                emailMessage.Subject = email.Subject;
+                emailMessage.Body = new MessageBody(email.Content);
+                if (email.Priority == MailPriority.High)
                 {
-                    emailMessage.CcRecipients.Add(to);
-                });
-            }
+                    emailMessage.Importance = Importance.High;
+                }
 
-            if (email.BCC != null)
-            {
-                email.BCC.ForEach(to =>
+                email.To.ForEach(to =>
                 {
-                    emailMessage.BccRecipients.Add(to);
+                    emailMessage.ToRecipients.Add(to);
                 });
-            }
 
-            if (email.Attachments != null)
-            {
-                email.Attachments.ForEach(at =>
+                if (email.CC != null)
                 {
-                    emailMessage.Attachments.AddFileAttachment(at.Name, at.Content);
-                });
+                    email.CC.ForEach(to =>
+                    {
+                        emailMessage.CcRecipients.Add(to);
+                    });
+                }
+
+                if (email.BCC != null)
+                {
+                    email.BCC.ForEach(to =>
+                    {
+                        emailMessage.BccRecipients.Add(to);
+                    });
+                }
+
+                if (email.Attachments != null)
+                {
+                    email.Attachments.ForEach(at =>
+                    {
+                        emailMessage.Attachments.AddFileAttachment(at.Name, at.Content);
+                    });
+                }
+
+                emailMessage.From = email.FromEmail;
+
+                return emailMessage;
             }
-
-            emailMessage.From = email.FromEmail;
-
-            return emailMessage;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

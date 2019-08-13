@@ -40,14 +40,13 @@ namespace Notification.SMTP
             }
             catch (Exception ex)
             {
-
+                return new NotificationResponse
+                {
+                    DeliveryStatus = DeliveryStatus.Bounced,
+                    NotificationStatus = NotificationStatus.Failed,
+                    Exception = ex
+                };
             }
-
-            return new NotificationResponse
-            {
-                DeliveryStatus = DeliveryStatus.Bounced,
-                NotificationStatus = NotificationStatus.Failed
-            };
         }
 
 
@@ -59,19 +58,16 @@ namespace Notification.SMTP
                 notifications.ToList().ForEach(n => {
                     resp.Add(this.Send(n));
                 });
-
-                return resp;
             }
             catch (Exception ex)
             {
-
+                resp.Add(new NotificationResponse
+                {
+                    DeliveryStatus = DeliveryStatus.Bounced,
+                    NotificationStatus = NotificationStatus.Failed,
+                    Exception = ex
+                });
             }
-
-            resp.Add(new NotificationResponse
-            {
-                DeliveryStatus = DeliveryStatus.Bounced,
-                NotificationStatus = NotificationStatus.Failed
-            });
                        
             return resp;
         }
@@ -90,58 +86,65 @@ namespace Notification.SMTP
             }
             catch (Exception ex)
             {
-
+                return new NotificationResponse
+                {
+                    DeliveryStatus = DeliveryStatus.Bounced,
+                    NotificationStatus = NotificationStatus.Failed,
+                    Exception = ex
+                };
             }
-
-            return new NotificationResponse
-            {
-                DeliveryStatus = DeliveryStatus.Bounced,
-                NotificationStatus = NotificationStatus.Failed
-            };
         }
 
         private MailMessage GetMailMessage(Email mail)
         {
-            MailMessage message = new MailMessage();
-            mail.FromEmail = string.IsNullOrEmpty(mail.FromEmail) ? this.Config.UserName : mail.FromEmail;
-            message.From = new MailAddress(mail.FromEmail);
-            mail.To.ForEach(to =>
+            try
             {
-                message.To.Add(to);
-            });
-
-            if (mail.Attachments != null)
-            {
-                mail.Attachments.ForEach(at =>
+                MailMessage message = new MailMessage();
+                mail.FromEmail = string.IsNullOrEmpty(mail.FromEmail) ? this.Config.UserName : mail.FromEmail;
+                message.From = new MailAddress(mail.FromEmail);
+                mail.To.ForEach(to =>
                 {
-                    message.Attachments.Add(new Attachment(new MemoryStream(at.Content), at.Name));
+                    message.To.Add(to);
                 });
-            }
 
-            if (mail.CC != null)
-            {
-                mail.CC.ForEach(cc =>
+                if (mail.Attachments != null)
                 {
-                    message.CC.Add(cc);
-                });
-            }
+                    mail.Attachments.ForEach(at =>
+                    {
+                        message.Attachments.Add(new Attachment(new MemoryStream(at.Content), at.Name));
+                    });
+                }
 
-            if (mail.BCC != null)
-            {
-                mail.BCC.ForEach(Bcc =>
+                if (mail.CC != null)
                 {
-                    message.Bcc.Add(Bcc);
-                });
+                    mail.CC.ForEach(cc =>
+                    {
+                        message.CC.Add(cc);
+                    });
+                }
+
+                if (mail.BCC != null)
+                {
+                    mail.BCC.ForEach(Bcc =>
+                    {
+                        message.Bcc.Add(Bcc);
+                    });
+                }
+
+                if (mail.Priority == Concerns.MailPriority.High)
+                {
+                    message.Priority = System.Net.Mail.MailPriority.High;
+                }
+
+                message.Subject = mail.Subject;
+                message.Body = mail.Content;
+                return message;
             }
 
-            if (mail.Priority == Concerns.MailPriority.High)
+            catch (Exception ex)
             {
-                message.Priority = System.Net.Mail.MailPriority.High;
+                throw ex;
             }
-
-            message.Subject = mail.Subject;
-            message.Body = mail.Content;
-            return message;
         }
     }
 }
