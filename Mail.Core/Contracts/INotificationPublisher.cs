@@ -1,9 +1,6 @@
 ﻿using Notification.Concerns;
-using Notification.Contracts;
 using Notification.Core.Providers;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Notification.Core.Contracts

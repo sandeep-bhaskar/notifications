@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Notification.Concerns
+﻿namespace Notification.Concerns
 {
     public enum NotificationType
     {

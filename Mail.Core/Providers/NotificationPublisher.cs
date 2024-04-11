@@ -1,10 +1,8 @@
 ﻿using Notification.Concerns;
-using Notification.Contracts;
 using Notification.Core.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Notification.Core.Providers
@@ -28,22 +26,15 @@ namespace Notification.Core.Providers
                 notification.Status = response.NotificationStatus;
                 return notification.Status;
             }
-            catch (Exception e)
+            catch (Exception)
             {
+                return NotificationStatus.Failed;
             }
-
-            return NotificationStatus.Failed;
         }
 
-        public async void Publish<N>(IEnumerable<N> notifications) where N : Concerns.Notification
+        public void Publish<N>(IEnumerable<N> notifications) where N : Concerns.Notification
         {
-            try
-            {
-                SendNotifications(notifications.ToList());
-            }
-            catch (Exception e)
-            {
-            }
+            SendNotifications(notifications.ToList());
         }
 
         private void SendNotifications<N>(List<N> notifications) where N : Concerns.Notification
@@ -54,9 +45,9 @@ namespace Notification.Core.Providers
                 {
                     Parallel.ForEach(notifications, (_) => Publish(_));
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }

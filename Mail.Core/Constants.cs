@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Notification.Core
+﻿namespace Notification.Core
 {
     public class Constants
     {

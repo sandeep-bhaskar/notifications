@@ -1,12 +1,12 @@
 ﻿using Notification.Core;
-using Notification.Concerns;
-using SendGrid;
-using SendGrid.Helpers.Mail;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Notification.Core.Providers;
 using System.Linq;
+using SendGrid;
+using Notification.Concerns;
+using SendGrid.Helpers.Mail;
 
 namespace Notification.SendGrid
 {
@@ -24,7 +24,7 @@ namespace Notification.SendGrid
 
         public async override Task<IEnumerable<NotificationResponse>> Send(IEnumerable<T> notifications)
         {
-            List<NotificationResponse> resp = new List<NotificationResponse>();
+            List<NotificationResponse> resp = [];
             try
             {
                 notifications.ToList().ForEach(n =>
@@ -41,7 +41,7 @@ namespace Notification.SendGrid
                     Exception = ex
                 });
             }
-
+            await Task.CompletedTask;
             return resp;
         }
 
@@ -129,9 +129,9 @@ namespace Notification.SendGrid
 
                 return msg;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
     }

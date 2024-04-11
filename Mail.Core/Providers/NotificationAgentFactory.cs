@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Notification.Concerns;
-using Notification.Contracts;
 using Notification.Core.Providers;
 
 namespace Notification.Core
@@ -15,7 +13,7 @@ namespace Notification.Core
         {            
         }
 
-        private static Object _mutex = new Object();
+        private static Object _mutex = new();
 
         private static T NotificationAgentInstance;
 
@@ -38,10 +36,10 @@ namespace Notification.Core
             {
                 return await NotificationAgentInstance.SendAsync(notification);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //// Failed to send email notification
-                throw ex;
+                throw;
             }
         }
 
@@ -53,10 +51,10 @@ namespace Notification.Core
             {
                 responses = notifications.Select(n => NotificationAgentInstance.SendAsync(n)).ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //// Failed to send email notification
-                throw ex;
+                throw;
             }
 
             return await Task.WhenAll(responses);

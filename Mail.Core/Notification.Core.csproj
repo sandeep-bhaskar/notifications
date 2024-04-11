@@ -1,20 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <PackageId>NotificationAdviser</PackageId>
     <Authors>sandeep</Authors>
     <Product>Notifications</Product>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Mail.Model\Notification.Concerns.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <None Update="Notification.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
 </Project>
